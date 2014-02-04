@@ -4,32 +4,30 @@
   <title><![CDATA[乌龙茶的部落格]]></title>
   <link href="http://yechunxiao19.github.com/atom.xml" rel="self"/>
   <link href="http://yechunxiao19.github.com/"/>
-  <updated>2014-02-04T20:54:36+08:00</updated>
+  <updated>2014-02-04T21:53:53+08:00</updated>
   <id>http://yechunxiao19.github.com/</id>
   <author>
-    <name><![CDATA[叶春晓]]></name>
+    <name><![CDATA[yechunxiao19]]></name>
     <email><![CDATA[yechunxiao19@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
   
   <entry>
-    <title type="html"><![CDATA[Ios-viewcontroller-lifecycle]]></title>
+    <title type="html"><![CDATA[ViewController生命周期]]></title>
     <link href="http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle/"/>
     <updated>2014-02-04T20:38:21+08:00</updated>
     <id>http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p><img src="http://h.hiphotos.bdimg.com/album/s%3D1100%3Bq%3D90/sign=8dd44570e9c4b7453094b317ffcc2566/3801213fb80e7becd366c0b82d2eb9389b506b2f.jpg" alt="" /></p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Delegate-messaging]]></title>
+    <title type="html"><![CDATA[应用生命周期]]></title>
     <link href="http://yechunxiao19.github.com/blog/2014/02/04/delegate-messaging/"/>
     <updated>2014-02-04T17:58:47+08:00</updated>
     <id>http://yechunxiao19.github.com/blog/2014/02/04/delegate-messaging</id>
-    <content type="html"><![CDATA[<h2>应用生命周期</h2>
-
-<h3>ios应用有5种状态：</h3>
+    <content type="html"><![CDATA[<h3>ios应用有5种状态：</h3>
 
 <ul>
 <li>Not Running（非运行状态）应用未运行</li>
