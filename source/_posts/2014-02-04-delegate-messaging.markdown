@@ -1,12 +1,10 @@
 ---
 layout: post
-title: "delegate-messaging"
+title: "应用生命周期"
 date: 2014-02-04 17:58:47 +0800
 comments: true
 categories: ios
 ---
-##应用生命周期
-
 ###ios应用有5种状态：   
 
 *  Not Running（非运行状态）应用未运行
