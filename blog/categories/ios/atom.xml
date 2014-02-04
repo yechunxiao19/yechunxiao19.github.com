@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[乌龙茶的部落格]]></title>
-  <link href="http://yechunxiao19.github.com/atom.xml" rel="self"/>
+  <title><![CDATA[Category: ios | 乌龙茶的部落格]]></title>
+  <link href="http://yechunxiao19.github.com/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://yechunxiao19.github.com/"/>
   <updated>2014-02-04T20:54:36+08:00</updated>
   <id>http://yechunxiao19.github.com/</id>
@@ -14,16 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Ios-viewcontroller-lifecycle]]></title>
-    <link href="http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle/"/>
-    <updated>2014-02-04T20:38:21+08:00</updated>
-    <id>http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Delegate-messaging]]></title>
+    <title type="html"><![CDATA[delegate-messaging]]></title>
     <link href="http://yechunxiao19.github.com/blog/2014/02/04/delegate-messaging/"/>
     <updated>2014-02-04T17:58:47+08:00</updated>
     <id>http://yechunxiao19.github.com/blog/2014/02/04/delegate-messaging</id>
