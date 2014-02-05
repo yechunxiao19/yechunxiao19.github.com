@@ -70,7 +70,8 @@ ViewController加载View对象的过程：
 
 整个ViewController的生命周期中，其余方法调用如图所示
 
-![](http://h.hiphotos.bdimg.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=8668cf68233fb80e08d161d206ea5e13/3801213fb80e7becd366c0b82d2eb9389b506b2f.jpg?referer=d1cf6431d309b3deb2a8d058d5e5&x=.jpg)
+![](https://7ms8tg.bn1302.livefilestore.com/y2pZcyHRGXeoNc8f_xIc_p6jiPs2MfjwZDTauC3kpvuiVMizKjjw7juJE8YxZ8Dbwc_Pllati10dX4qjtHAEapplA1sRjUrct7neTZkbnRKTCg/BCCDAEFE-C8E6-4CE5-B72D-6B2F76CA8544.png?psid=1)
+
 
 
 

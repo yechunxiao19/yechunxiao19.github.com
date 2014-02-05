@@ -5,4 +5,24 @@ date: 2014-02-04 22:30:48 +0800
 comments: true
 categories: ios
 ---
-arc
+####ARC以前的生活
+在ARC以前，是手动内存管理，但不论是自动的，还是手动的内存管理，reference counting始终是内存管理的一个核心内容。  
+用办公室的照明管理来类比说明一下reference counting的原理。
+
+按以下规则来安排照明灯的管理：
+
+1. 当某人进入办公室时，办公室是空，则他负责打开灯。2. 之后有人进入办公室，照明灯继续使用。3. 当某人离开办公室，他就不再需要照明灯了。4. 当最后一个人离开了，他关掉照明灯。
+我们量化的来管理照明灯系统，使用counter来计数：
+1. 当某人进入办公室时，办公室是空，counter +1。它由0变成了1，所以打开灯。2. 当另外的人进来，counter +1，它由1变成2.3. 当某人离开，counter -1，它由2变成1.4. 当最后一个人离开，counter变成了0，则关掉灯。
+
+<img src="https://7muh2q.bn1304.livefilestore.com/y2pXcCfTG3S9vsiAkh20ujVkLRhHCGAIig2RNc5MwlBBC5RFrhGtDdRS22N2uGKZ8WC0NfQAWA-CzAdVaOWaPqNIQqs1GFABKDObkYhuG7HJxE/E4D8A866-C198-466D-BD3F-9B038B7881C0.png?psid=1" alt="Drawing" width="600px"/>
+
+reference counting的原理跟照明灯的管理是一样的
+
+1. 打开灯 == 创建(alloc/new/copy/mutableCopy group)一个Objective-C对象并使用它 `reference counting = 1` 
+2. 又进来一个人使用灯 == 取得(retain)Objective-C对象所有权 `reference counting = 2`
+3. 有一个人离开，不再使用灯 == 放弃(release)Objective-C对象所有权 `reference counting = 1`
+4. 最后一个人离开，关掉灯 == 丢弃(dealloc)Objective-C对象 `reference counting = 0`
+
+
+

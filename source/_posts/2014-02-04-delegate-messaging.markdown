@@ -5,7 +5,7 @@ date: 2014-02-04 17:58:47 +0800
 comments: true
 categories: ios
 ---
-###ios应用有5种状态：   
+####ios应用有5种状态：   
 
 *  Not Running（非运行状态）应用未运行
 *  Inactive（前台非活动状态）应用正在进入前台，此时不接受事件处理
@@ -13,11 +13,11 @@ categories: ios
 *  Background（后台状态）不存在后台run loop，则进入Suspended状态
 *  Suspended（挂起状态）不执行代码，内存不够时，应用将终止
 
-###整个应用的生命周期如图所示
+####整个应用的生命周期如图所示
 
 <img src="http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png" alt="Drawing" width="600px"/>
 
-###总结：
+####总结：
   
 * `didFinishLaunching`整个生命周期只会调用一次。  
 * 应用能进行后台运行，首先SDK必须在4.0以上的版本，其次得在info.plist中不禁用后台。
