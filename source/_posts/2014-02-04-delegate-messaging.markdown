@@ -13,10 +13,14 @@ categories: ios
 *  Background（后台状态）不存在后台run loop，则进入Suspended状态
 *  Suspended（挂起状态）不执行代码，内存不够时，应用将终止
 
-整个应用的生命周期如图所示
+###整个应用的生命周期如图所示
+
 ![](http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png)
 
-* didFinishLaunching整个生命周期只会调用一次。
+
+###总结：
+  
+* didFinishLaunching整个生命周期只会调用一次。  
 * 应用能进行后台运行，首先SDK必须在4.0以上的版本，其次得在info.plist中不禁用后台。
 * 内存不足情况下，以及用户自行关闭应用的情况下，不会执行applicationWillTerminate:，所以必须要在applicationWillResignActive事件里保存数据。
 * becomeActive和resignActive配对操作进行UI数据等的恢复。
