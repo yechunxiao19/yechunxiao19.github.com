@@ -3,5 +3,5 @@ layout: post
 title: "Blocks"
 date: 2014-02-04 22:31:13 +0800
 comments: true
-categories: 
+categories: ios
 ---

@@ -3,6 +3,6 @@ layout: post
 title: "ARC"
 date: 2014-02-04 22:30:48 +0800
 comments: true
-categories: 
+categories: ios
 ---
 arc

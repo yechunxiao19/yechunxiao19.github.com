@@ -3,5 +3,5 @@ layout: post
 title: "GCD"
 date: 2014-02-04 22:31:52 +0800
 comments: true
-categories: 
+categories: ios
 ---

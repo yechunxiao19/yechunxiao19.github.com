@@ -15,13 +15,12 @@ categories: ios
 
 ###整个应用的生命周期如图所示
 
-![](http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png)
-
+<img src="http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png" alt="Drawing" width="600px"/>
 
 ###总结：
   
-* didFinishLaunching整个生命周期只会调用一次。  
+* `didFinishLaunching`整个生命周期只会调用一次。  
 * 应用能进行后台运行，首先SDK必须在4.0以上的版本，其次得在info.plist中不禁用后台。
-* 内存不足情况下，以及用户自行关闭应用的情况下，不会执行applicationWillTerminate:，所以必须要在applicationWillResignActive事件里保存数据。
-* becomeActive和resignActive配对操作进行UI数据等的恢复。
-* enterBackground和enterForeground配对操作进行用户数据等的恢复。
+* 内存不足情况下，以及用户自行关闭应用的情况下，不会执行`applicationWillTerminate:`，所以必须要在`applicationWillResignActive`事件里保存数据。
+* `becomeActive`和`resignActive`配对操作进行UI数据等的恢复。
+* `enterBackground`和`enterForeground`配对操作进行用户数据等的恢复。

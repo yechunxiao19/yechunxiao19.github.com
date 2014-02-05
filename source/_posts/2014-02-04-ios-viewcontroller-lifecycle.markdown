@@ -69,6 +69,7 @@ ViewController加载View对象的过程：
     }
 
 整个ViewController的生命周期中，其余方法调用如图所示
+
 ![](http://h.hiphotos.bdimg.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=8668cf68233fb80e08d161d206ea5e13/3801213fb80e7becd366c0b82d2eb9389b506b2f.jpg?referer=d1cf6431d309b3deb2a8d058d5e5&x=.jpg)
 
 
