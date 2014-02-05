@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ios | 乌龙茶的部落格]]></title>
   <link href="http://yechunxiao19.github.com/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://yechunxiao19.github.com/"/>
-  <updated>2014-02-04T21:53:53+08:00</updated>
+  <updated>2014-02-05T15:45:39+08:00</updated>
   <id>http://yechunxiao19.github.com/</id>
   <author>
     <name><![CDATA[yechunxiao19]]></name>
@@ -14,11 +14,125 @@
 
   
   <entry>
+    <title type="html"><![CDATA[GCD]]></title>
+    <link href="http://yechunxiao19.github.com/blog/2014/02/04/gcd/"/>
+    <updated>2014-02-04T22:31:52+08:00</updated>
+    <id>http://yechunxiao19.github.com/blog/2014/02/04/gcd</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Blocks]]></title>
+    <link href="http://yechunxiao19.github.com/blog/2014/02/04/blocks/"/>
+    <updated>2014-02-04T22:31:13+08:00</updated>
+    <id>http://yechunxiao19.github.com/blog/2014/02/04/blocks</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ARC]]></title>
+    <link href="http://yechunxiao19.github.com/blog/2014/02/04/arc/"/>
+    <updated>2014-02-04T22:30:48+08:00</updated>
+    <id>http://yechunxiao19.github.com/blog/2014/02/04/arc</id>
+    <content type="html"><![CDATA[<p>arc</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[ViewController生命周期]]></title>
     <link href="http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle/"/>
     <updated>2014-02-04T20:38:21+08:00</updated>
     <id>http://yechunxiao19.github.com/blog/2014/02/04/ios-viewcontroller-lifecycle</id>
-    <content type="html"><![CDATA[<p><img src="http://h.hiphotos.bdimg.com/album/s%3D1100%3Bq%3D90/sign=8dd44570e9c4b7453094b317ffcc2566/3801213fb80e7becd366c0b82d2eb9389b506b2f.jpg" alt="" /></p>
+    <content type="html"><![CDATA[<p>编程实现ViewController初始化时，创建一个自定义的初始化方法，调用父类的init方法，然后进行类的特定初始化。一般情况下，初始化方法不写过于复杂的。</p>
+
+<p>ViewController加载View对象的过程：</p>
+
+<ol>
+<li>ViewController调用<code>loadView</code>方法，loadView的默认实现执行以下两个方法之一
+
+<ul>
+<li>如果ViewController与storyboard关联，它会从storyboard加载</li>
+<li>如果ViewController不与storyboard关联，则会创建一个空UIView对象分配给View属性</li>
+</ul>
+</li>
+<li>ViewController调用<code>viewDidLoad</code>方法，执行子类的额外加载任务</li>
+</ol>
+
+
+<p><img src="https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/Art/loading_a_view_into_memory_2x.png" alt="Drawing" width="600px"/></p>
+
+<p>编程创建View，而不使用storyboard，应该重载loadView方法。在方法中实现以下步骤：</p>
+
+<ol>
+<li>创建root view对象
+
+<ul>
+<li>root view应该包含ViewController关联的所有其他view。一般情况下，root view的大小应该充满整个屏幕，但也可以根据需要调整。<a href="https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/AdoptingaFull-ScreenLayout/AdoptingaFull-ScreenLayout.html#//apple_ref/doc/uid/TP40007457-CH13-SW2">“Resizing the View Controller’s Views.”</a></li>
+<li>你可以使用通用的UIView对象，也可以使用自定义的UIView，以及任何view的扩展来填充屏幕</li>
+</ul>
+</li>
+<li>创建subviews添加到root view
+
+<ul>
+<li>对于每个subview都应该创建并初始化</li>
+<li>添加到父view使用<code>addSubview:</code>方法</li>
+</ul>
+</li>
+<li>如果你使用auto layout，对于你创建的每个view设置足够的约束，否则，实现<code>viewWillLayoutSubviews</code>和<code>viewDidLayoutSubviews</code>来调整subview的大小</li>
+<li>分配root view给ViewController的view属性</li>
+</ol>
+
+
+<p>编程创建view示例</p>
+
+<pre><code>- (void)loadView
+{
+    CGRect applicationFrame = [[UIScreen mainScreen] applicationFrame];
+    UIView *contentView = [[UIView alloc] initWithFrame:applicationFrame];
+    contentView.backgroundColor = [UIColor blackColor];
+    self.view = contentView;
+
+    levelView = [[LevelView alloc] initWithFrame:applicationFrame       viewController:self];
+    [self.view addSubview:levelView];
+}
+</code></pre>
+
+<p>有效的内存管理：</p>
+
+<ul>
+<li><code>Initialization methods</code>  为ViewController分配关键的数据结构</li>
+<li><code>loadView</code>  创建你的view对象，如果使用storyboard，则不需要重载此方法</li>
+<li><code>Custom properties and methods</code> 创建自定义对象</li>
+<li><code>viewDidLoad</code> 分配或者加载view所需数据</li>
+<li><code>didReceiveMemoryWarning</code> 使用这个方法来释放所有ViewController相关联的非必要对象，ios6以后，也可以在这个方法释放view</li>
+<li><code>dealloc</code> 重载这个方法只执行ViewController的最后清理，实例变量和属性对象被自动释放，不需要显式地释放它们</li>
+</ul>
+
+
+<p>对于ios6以后的版本，按需要释放ViewController的view对象。对于释放view对象来获取内存空间的必要性，应该由开发者来判断。</p>
+
+<p>释放ViewController不显示的view</p>
+
+<pre><code>- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Add code to clean up any of your own resources that are no longer necessary.
+    if ([self.view window] == nil)
+    {
+        // Add code to preserve data stored in the views that might be
+        // needed later.
+
+        // Add code to clean up other strong references to the view in
+        // the view hierarchy.
+        self.view = nil;
+    }
+}
+</code></pre>
+
+<p>整个ViewController的生命周期中，其余方法调用如图所示
+<img src="http://h.hiphotos.bdimg.com/album/s%3D550%3Bq%3D90%3Bc%3Dxiangce%2C100%2C100/sign=8668cf68233fb80e08d161d206ea5e13/3801213fb80e7becd366c0b82d2eb9389b506b2f.jpg?referer=d1cf6431d309b3deb2a8d058d5e5&amp;x=.jpg" alt="" /></p>
 ]]></content>
   </entry>
   
@@ -38,8 +152,11 @@
 </ul>
 
 
-<p>整个应用的生命周期如图所示
-<img src="http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png" alt="" /></p>
+<h3>整个应用的生命周期如图所示</h3>
+
+<p><img src="http://www.cocoanetics.com/files/Bildschirmfoto-2012-03-05-um-5.26.29-PM.png" alt="" /></p>
+
+<h3>总结：</h3>
 
 <ul>
 <li>didFinishLaunching整个生命周期只会调用一次。</li>
