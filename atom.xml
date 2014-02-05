@@ -4,7 +4,7 @@
   <title><![CDATA[乌龙茶的部落格]]></title>
   <link href="http://yechunxiao19.github.com/atom.xml" rel="self"/>
   <link href="http://yechunxiao19.github.com/"/>
-  <updated>2014-02-05T16:03:59+08:00</updated>
+  <updated>2014-02-05T18:26:05+08:00</updated>
   <id>http://yechunxiao19.github.com/</id>
   <author>
     <name><![CDATA[yechunxiao19]]></name>
@@ -27,7 +27,78 @@
     <link href="http://yechunxiao19.github.com/blog/2014/02/04/blocks/"/>
     <updated>2014-02-04T22:31:13+08:00</updated>
     <id>http://yechunxiao19.github.com/blog/2014/02/04/blocks</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<p>Blocks是C语言的新拓展，一句话来概括的话，可以理解为“anonymous functions together with automatic (local) variables.” Blocks有点像函数，但是它可以在其它函数或方法中进行声明和定义，同时它还是匿名的（匿名函数），并可以捕获其所在作用域中的变量（闭包特性)。</p>
+
+<p>使用^操作符来来声明一个block变量和指示block文本的开始。Block本身的主体被{}包含着,如下面的例子那样</p>
+
+<pre><code>int multiplier = 7;
+int (^myBlock)(int) = ^(int num) {
+    return num * multiplier;
+};
+</code></pre>
+
+<p><img src="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Blocks/Art/blocks.jpg" alt="" /></p>
+
+<p>如果你没有显式的给block表达式声明一个返回值,它会自动的从block内容推断出来。如果返回值是推断的,而且参数列表也是void,那么你同样可以省略参数列 表的void。如果或者当出现多个返回状态的时候,它们必须是完全匹配的(如果有必 要可以使用强制转换)。</p>
+
+<p>block有点像函数，事实上它确实可以像函数一样使用</p>
+
+<pre><code>int multiplier = 7;
+int (^myBlock)(int) = ^(int num) {
+    return num * multiplier;
+};
+
+printf("%d", myBlock(3));
+// prints "21"
+</code></pre>
+
+<p>block也可以作为函数的参数</p>
+
+<pre><code>char *myCharacters[3] = { "TomJohn", "George", "Charles Condomine" };
+
+qsort_b(myCharacters, 3, sizeof(char *), ^(const void *l, const void *r) {
+    char *left = *(char **)l;
+    char *right = *(char **)r;
+    return strncmp(left, right, 1);
+});
+</code></pre>
+
+<p>block有闭包的特性，所以可以捕获所在作用域的变量</p>
+
+<pre><code>void testBlock() {
+    int a = 1;
+    int b = 2;
+    int (^aBlock)(void) = ^ { return a + b; };
+    printf("%d\n", aBlock());   // 输出 3
+    a = 0;
+    printf("%d\n", aBlock());   // 还是输出 3
+}
+</code></pre>
+
+<p>需要注意的是，两次输出的值都为3，即使在第二次输出前我们已经将a的值赋为0。这是因为在定义aBlock时编译器已经对a和b的值作了一个const拷贝（你不能在aBlock中修改a的值）并保存，导致后续外部对a的修改没有影响到aBlock的执行结果。如果想在aBlock中通过引用访问a或者修改a的值，你需要在a的声明前加上一个限定词__block：</p>
+
+<pre><code>void testBlock() {
+    __block int a = 1;
+    int b = 2;
+    int (^aBlock)(void) = ^ { return a + b; };
+    a = 0;
+    printf("%d\n", aBlock());   // 输出 2
+}
+</code></pre>
+
+<p>这样，使用该限定词的变量会通过引用的方式传入Block，使得它的值可以在Block执行后被修改。这样的变量通常是保存在栈中的，但是如果引用该变量的Block被拷贝，它也会随之被拷贝到堆中。使用__block的变量有两个限制,它们不能是可变长的数组,并且它们不能是包含有C99可变长度的数组变量的数据结构.</p>
+
+<p>Blocks 通常代表一个很小、自包的代码片段。因此它们作为封装的工作单元在并 发执行,或在一个集合项上,或当其他操作完成时的回调的时候非常实用。</p>
+
+<p>在引用计数的环境里面,默认情况下当你在block里面引用一个Objective-C对象的时候,该对象会被retain。当你简单的引用了一个对象的实例变量时,它同样被retain。但是被<strong>block存储类型修饰符标记的对象变量不会被 retain. 在垃圾回收机制里面,如果你同时使用</strong>weak和__block来标识一个变量,那么该block将不会保证它是一直是有效的。</p>
+
+<p>如果你在实现方法的时候使用了 block,对象的内存管理规则更微妙:</p>
+
+<ul>
+<li>如果你通过引用来访问一个实例变量,self 会被 retain。</li>
+<li>如果你通过值来访问一个实例变量,那么变量会被 retain。</li>
+</ul>
+
 ]]></content>
   </entry>
   
