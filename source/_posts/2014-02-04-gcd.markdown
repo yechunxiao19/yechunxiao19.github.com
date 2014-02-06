@@ -1,7 +1,17 @@
 ---
 layout: post
-title: "GCD"
+title: "ios并发编程"
 date: 2014-02-04 22:31:52 +0800
 comments: true
 categories: ios
 ---
+ios的多线程管理有3种方式
+
+1. NSThread & Run Loop
+2. NSOperation
+3. GCD
+
+
+
+
+
