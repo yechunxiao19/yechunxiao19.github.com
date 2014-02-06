@@ -5,7 +5,8 @@ date: 2014-02-04 22:30:48 +0800
 comments: true
 categories: ios
 ---
-####ARC以前的生活
+###ARC以前的生活
+####reference counting
 在ARC以前，是手动内存管理，但不论是自动的，还是手动的内存管理，reference counting始终是内存管理的一个核心内容。  
 用办公室的照明管理来类比说明一下reference counting的原理。
 
@@ -19,10 +20,47 @@ categories: ios
 
 reference counting的原理跟照明灯的管理是一样的
 
-1. 打开灯 == 创建(alloc/new/copy/mutableCopy group)一个Objective-C对象并使用它 `reference counting = 1` 
-2. 又进来一个人使用灯 == 取得(retain)Objective-C对象所有权 `reference counting = 2`
-3. 有一个人离开，不再使用灯 == 放弃(release)Objective-C对象所有权 `reference counting = 1`
-4. 最后一个人离开，关掉灯 == 丢弃(dealloc)Objective-C对象 `reference counting = 0`
+1. 打开灯 == 创建(`alloc/new/copy/mutableCopy group`)一个Objective-C对象并使用它 `reference counting = 1` 
+2. 又进来一个人使用灯 == 取得(`retain`)Objective-C对象所有权 `reference counting = 2`
+3. 有一个人离开，不再使用灯 == 放弃(`release`)Objective-C对象所有权 `reference counting = 1`
+4. 最后一个人离开，关掉灯 == 丢弃(`deallo`c)Objective-C对象 `reference counting = 0`
 
+手动管理内存的限定符：
 
+* assign 对于NSInteger、CGPoint、C数据类型等，这些直接在栈上开辟的内存，无需管理他们内存计数器，使用assign比较合适
+* retain 对于在堆中开辟的内存，我们需要维护内存的计数器。
+* copy 如果指针A和指针B不想相互牵扯，A管理A的内存，B管理B的内存，copy正是为这个而生。
 
+####Autorelease  
+Autorelease从名字来看，你也许会认为它类似于ARC，但其实不是这样的，它更类似于C语言的局部变量。对于Autorelease，你可以像局部变量一样使用对象，这意味着当执行离开代码块，对象将自动调用`release`方法。
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; id obj = [[NSObject 	alloc] init];	[obj autorelease];	[pool drain];
+在以上代码的最后，`[pool drain]`将执行`[obj release]`。
+###ARC
+ARC是Objective-C编译器的特性，而不是运行时特性或者垃圾回收机制，ARC所做的只不过是在代码编译时为你自动在合适的位置插入`release`或`autorelease`，就如同之前手动内存管理时你所做的那样。因此，至少在效率上ARC机制是不会比手动内存管理弱的，而因为可以在最合适的地方完成reference counting的维护，以及部分优化，使用ARC甚至能比MRC取得更高的运行效率。
+
+ARC下有以下4个限定符：
+
+*  `strong` 跟retain一样，在ARC下，如果对象没有任何strong指针指向，那么就将被销毁
+*  `weak` weak指针指向的对象reference counting不会增加，对象无strong指针指向时，对象会被销毁，在ARC机制作用下，所有指向这个对象的weak指针将被置为nil。delegate、outlet多使用weak
+*  `unsafe_unretained` 这就是原来的assign。当需要支持iOS4时需要用到这个关键字
+*  `autoreleasing` 这个就等于手动内存管理的Autorelease
+
+ARC只适用于NSObject，底层对象依旧需要进行手动内存管理。在ARC中，编译器需要知道这些底层对象指针应该由谁来负责释放，这时就要进行桥接处理。
+
+* `__bridge` 只做类型转换，不改变对象所有权，是我们最常用的转换符。
+* `__bridge_retained`   将Objective-C对象转换为Core Foundation对象，把对象所有权桥接给Core Foundation对象，同时剥夺ARC的管理权，后续需要开发者使用CFRelease或者相关方法手动来释放对象。
+* `__bridge_transfer` 将非Objective-C对象转换为Objective-C对象，同时将对象的管理权交给ARC，开发者无需手动管理内存。
+
+从OC转CF，ARC管理内存
+	
+	NSString *aNSString = [[NSString alloc]initWithFormat:@"test"];
+	CFStringRef aCFString = (__bridge CFStringRef)aNSString;
+	(void)aNSString
+	
+从CF转OC，需要开发者手动释放，不归ARC管（void* id的转换）
+
+	CFStringRef aCFString = CFStringCreateWithCString(NULL, "test", kCFStringEncodingASCII);  
+    NSString *aNSString = (__bridge NSString *)aCFString;    
+    (void)aNSString;    
+    CFRelease(aCFString); 
