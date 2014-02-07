@@ -120,12 +120,24 @@
 </ol>
 
 
-<p>手动管理内存的限定符：</p>
+<p>对于新创建的对象，方法名以<code>alloc/new/copy/mutableCopy group</code>开头的，才拥有这个对象，才有责任负责释放它。</p>
+
+<h4>实现对象的 dealloc</h4>
+
+<p>NSObject 类定义了一个名为 <code>dealloc</code> 的方法。这个方法在对象无主(没有所有者)的情况下, 当内存回收的时候会由系统自动调用。<code>dealloc</code> 方法的作用就是释放对象的内存,并弃掉它持有的任何资源&mdash;-以及它对其他对象的所有权。</p>
+
+<pre><code>- (void)dealloc{
+    [_firstName release];
+    [super dealloc];
+}
+</code></pre>
+
+<h4>手动管理内存的限定符</h4>
 
 <ul>
-<li>assign 对于NSInteger、CGPoint、C数据类型等，这些直接在栈上开辟的内存，无需管理他们内存计数器，使用assign比较合适</li>
-<li>retain 对于在堆中开辟的内存，我们需要维护内存的计数器。</li>
-<li>copy 如果指针A和指针B不想相互牵扯，A管理A的内存，B管理B的内存，copy正是为这个而生。</li>
+<li><code>assign</code> 对于NSInteger、CGPoint、C数据类型等，这些直接在栈上开辟的内存，无需管理他们内存计数器，使用assign比较合适</li>
+<li><code>retain</code> 对于在堆中开辟的内存，我们需要维护内存的计数器。</li>
+<li><code>copy</code> 如果指针A和指针B不想相互牵扯，A管理A的内存，B管理B的内存，copy正是为这个而生。</li>
 </ul>
 
 
@@ -133,16 +145,30 @@
 
 <p>Autorelease从名字来看，你也许会认为它类似于ARC，但其实不是这样的，它更类似于C语言的局部变量。对于Autorelease，你可以像局部变量一样使用对象，这意味着当执行离开代码块，对象将自动调用<code>release</code>方法。</p>
 
-<pre><code>NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; id obj = [[NSObject     alloc] init];   [obj autorelease];  [pool drain];
+<pre><code>NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+id obj = [[NSObject alloc] init];
+[obj autorelease];
+[pool drain];
 </code></pre>
 
-<p>在以上代码的最后，<code>[pool drain]</code>将执行<code>[obj release]</code>。</p>
+<p>在以上代码的最后，<code>[pool drain]</code>将执行<code>[obj release]</code>。
+Cocoa 希望程序中长期存在一个 autorelease 池。如果池不存在，autorelease 的对象就无从 release 了，从而造成内存泄露。当程序中没有 autorelease 池，你的程序还给对象发送 autorelease 消息，这是 Cocoa 会发出一个错误日志。AppKit 和 UIKit 框架自动在每个消息循环的开始都创建一个池(比如鼠标按下事件、触摸事件)并在结尾处销毁这个池。正因为如此，你实际上不需要创建 autorelease 池，甚至不需要知道创建 autorelease 池的代码如何写。下面三种情形下，你却应该使用你自己的 autorelease 池:</p>
+
+<ol>
+<li>如果你写的程序,不是基于 UI Framwork。例如你写的是一个基于命令行的程序。</li>
+<li>如果你程序中的一个循环,在循环体中创建了大量的临时对象。你可以在循环体内部新建一个 autorelease 池,并在一次循环结束时销毁这些临时对象。这样可以减少你的程序对内存的占用峰值。</li>
+<li>如果你发起了一个 secondary 线程(main 线程之外的线程)。这时你“必须”在线程的最初执行代码中创建 autorelease 池,否则你的程序就内存泄露了。</li>
+</ol>
+
+
+<p>Autorelease 池常常被称为“嵌套”的，但实际上也可以把这些嵌套的池理解为在一个栈中。当一个对象收到了 autorelease 消息时,又或者这个对象 作为 addObject:方法的参数传递的时候,这个对象被放到了当时这个栈中最顶端的那个池中。</p>
 
 <h3>ARC</h3>
 
-<p>ARC是Objective-C编译器的特性，而不是运行时特性或者垃圾回收机制，ARC所做的只不过是在代码编译时为你自动在合适的位置插入<code>release</code>或<code>autorelease</code>，就如同之前手动内存管理时你所做的那样。因此，至少在效率上ARC机制是不会比手动内存管理弱的，而因为可以在最合适的地方完成reference counting的维护，以及部分优化，使用ARC甚至能比MRC取得更高的运行效率。</p>
+<p>在工程中使用ARC非常简单：只需要像往常那样编写代码，只不过永远不写<code>retain</code>,<code>release</code>和<code>autorelease</code>三个关键字就好。
+ARC是Objective-C编译器的特性，而不是运行时特性或者垃圾回收机制，ARC所做的只不过是在代码编译时为你自动在合适的位置插入<code>release</code>或<code>autorelease</code>，就如同之前手动内存管理时你所做的那样。因此，至少在效率上ARC机制是不会比手动内存管理弱的，而因为可以在最合适的地方完成reference counting的维护，以及部分优化，使用ARC甚至能比MRC取得更高的运行效率。</p>
 
-<p>ARC下有以下4个限定符：</p>
+<h4>ARC下有以下4个限定符</h4>
 
 <ul>
 <li><code>strong</code> 跟retain一样，在ARC下，如果对象没有任何strong指针指向，那么就将被销毁</li>
@@ -151,6 +177,15 @@
 <li><code>autoreleasing</code> 这个就等于手动内存管理的Autorelease</li>
 </ul>
 
+
+<p>上文Autorelease池的代码在ARC下就转换为：</p>
+
+<pre><code>@autoreleasepool {
+    id __autoreleasing obj = [[NSObject alloc] init];
+}
+</code></pre>
+
+<h4>桥接</h4>
 
 <p>ARC只适用于NSObject，底层对象依旧需要进行手动内存管理。在ARC中，编译器需要知道这些底层对象指针应该由谁来负责释放，这时就要进行桥接处理。</p>
 
