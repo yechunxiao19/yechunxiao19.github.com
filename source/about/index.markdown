@@ -14,7 +14,6 @@ footer: true
 
 ###Experiences:
 * 2010.09 – 2014.06, Bachelor, Computer Science and Technology, Xidian University
-* 2013.07 – 2013.10, Meituan, intern at IOS team
 
 ###Interrests:
 * Object C
