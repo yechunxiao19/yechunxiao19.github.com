@@ -6,7 +6,7 @@ comments: true
 sharing: true
 footer: true
 ---
-![Alt text](http://hdn.xnimg.cn/photos/hdn221/20130511/1335/h_large_8yQk_b7ce0000011b113e.jpg)
+![](http://hdn.xnimg.cn/photos/hdn221/20130511/1335/h_large_8yQk_b7ce0000011b113e.jpg)
 ##About Me
 * Name: 叶春晓（Chunxiao, Ye）
 * Born: 1992, Chongqing
