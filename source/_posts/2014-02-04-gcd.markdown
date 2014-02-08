@@ -40,7 +40,7 @@ NSThread 比其他两种方式轻量级，但需要自己管理线程的生命�
 
 1. 在[ARC](http://yechunxiao19.github.io/blog/2014/02/04/arc/)这篇文章里面提到了，有3种情况应该自己创建autorelease池，其中一种情况就是创建了子线程。 
 2. 子线程应该自行管理好抛出异常，如果不在子线程内部设置异常处理函数，会导致程序直接Crash。
-3. 如果子线程不止一次操作，需要循环处理的话，设置一个Run Loop。  
+3. 如果子线程不止一次操作，需要循环处理的话，设置一个Run Loop。
 
 每个线程都维护了一个键-值的字典，它可以在线程里面的任何地方被访问。你可以使用该字典来保存一些信息,这些信息在整个线程的执行过程中都保持不变。你使用NSThread的`threadDictionary`方法来检索一个NSMutableDictionary对象，你可以在它里面添加任何线程需要的键。
 
@@ -52,6 +52,7 @@ NSThread 比其他两种方式轻量级，但需要自己管理线程的生命�
 
 NSOperation本身是抽象基类，我们必须实现子类。Foundation framework提供NSInvocationOperation和NSBlockOperation两个具体子类，你可以直接使用。
 
+
 所有 operation objects 都支持以下关键特性:
 
 1. 支持建立基于图的operation objects依赖。可以阻止某个operation 运行,直到它依赖的所有 operation 都已经完成。
@@ -59,6 +60,7 @@ NSOperation本身是抽象基类，我们必须实现子类。Foundation framewo
 3. 支持应用使用 KVO 通知来监控 operation 的执行状态。
 4. 支持 operation 优先级,从而影响相对的执行顺序。
 5. 支持取消,允许你中止正在执行的任务。
+
 
 创建一个 NSInvocationOperation 对象并发执行
 
@@ -84,6 +86,7 @@ NSOperation本身是抽象基类，我们必须实现子类。Foundation framewo
     
 使用`addExecutionBlock:`可以添加更多block到这个block operation对象。如果需要顺序地执行 block，你必须直接提交到所需的dispatch queue。
 
+
 自定义operation需要实现的方法：
 
 1. 自定义`initialization`方法:初始化，将operation对象设置为已知状态(必须实现)
@@ -93,13 +96,14 @@ NSOperation本身是抽象基类，我们必须实现子类。Foundation framewo
 5. `NSCoding`协议的方法:允许operation对象archive和unarchive
 
 
-operation响应取消，调用`isCancelled:`方法，如果返回YES(表示已取消),则立即退出执行。以下地方可能需要调用 isCancelled:
+operation响应取消，调用`isCancelled:`方法，如果返回YES(表示已取消),则立即退出执行。以下地方可能需要调用 isCancelled:g
 
 * 在执行任何实际的工作之前
 * 在循环的每次迭代过程中,如果每个迭代相对较长可能需要调用多次
 * 代码中相对比较容易中止操作的任何地方
 
 Operation对象默认按同步方式执行，也就是在调用`start`方法的那个线程中直接执行。但是如果你希望异步执行操作，你就必须定义operation对象为并发操作来实现。
+
 
 * `start` （必须）所有并发操作都必须覆盖这个方法，以自定义的实现替换默认行为。手动执行一个操作时，你会调用`start`方法。因此你对这个方法的实现是操作的起点，设置一个线程或其它执行环境，来执行你的任务。你的实现在任何时候都绝对不能调用`super`。
 * `main` （可选）这个方法通常用来实现operation对象相关联的任务。尽管你可以在`start`方法中执行任务，使用`main`来实现任务可以让你的代码更加清晰地分离设置和任务代码。
@@ -116,7 +120,3 @@ operation 可以在主任务完成之后执行一个 `completion block`。你可
 2. 手动执行 Operation，要求 Operation 已经准备好，`isReady`返回 YES，此时你才能调用`start`方法来执行
 
 ####GCD
-
-
-
-
