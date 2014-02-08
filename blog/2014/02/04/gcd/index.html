@@ -9,7 +9,7 @@
 	
 	<meta name="description" content="ios的多线程管理有3种方式 NSThread &amp; Run Loop
 NSOperation
-GCD Feb 4th, 2014 ios Comments ">
+GCD Run Loop 首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候， 它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出， &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -88,6 +88,34 @@ GCD Feb 4th, 2014 ios Comments ">
 <li>NSThread &amp; Run Loop</li>
 <li>NSOperation</li>
 <li>GCD</li>
+</ol>
+
+
+<h4>Run Loop</h4>
+
+<p>首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候， 它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出，这个线程就结束了。注意，这里是它一旦发现自己没活可干，就会马上消失，片刻都不会停留。</p>
+
+<p>这样我们就遇到一个问题，如果我们打算让这个线程做一个延时的任务，或者想让它接受其它的回调命令，或者等待一个点击等非即时性命令，而这个线程是不知道等的，因为它一发现自己没活干，就消失了。这显然不是我们希望的。可能有人会问，主线程不会这样啊，原因就是我们要讨论的主题，主线程默认开启了RunLoop，而我们创建的线程默认是没有开启的。</p>
+
+<p>因此，如果我们要在非主线程执行一些非即时性的事情，就必须手动开启RunLoop，它一旦开启，线程就会开启监听状态，这样线程便不会退出，而是转入休息状态，RunLoop负责把风，一旦发现活来了，就通知线程开始干活。如果我们确认这个线程再也不需要在处理任何非即时性事件时，可以停止RunLoop，这时候线程就再看看手头有没有现活，有继续做，没有就立刻退出。</p>
+
+<p><img src="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/Art/runloop.jpg" alt="" /></p>
+
+<p>输入源传递异步消息给相应的处理例程，并调用<code>runUntilDate:</code>方法来退出(在线程里面相关的<code>NSRunLoop</code>对象调用)。定时源则直接传递消息给处理例程，但并不会退出run loop。</p>
+
+<p>(未完待续，这块还是个半吊子。。。。。。)</p>
+
+<h4>NSThread</h4>
+
+<p>NSThread 比其他两种方式轻量级，但需要自己管理线程的生命周期，线程同步。线程同步对数据的加锁也会有一定的系统开销。</p>
+
+<p>使用 NSThread 来创建线程有多个方法:</p>
+
+<ol>
+<li>使用<code>+ (void)detachNewThreadSelector:(SEL)aSelector toTarget:(id)aTarget withObject:(id)anArgument</code>类方法来生成一个新的线程。</li>
+<li>使用<code>- (id)initWithTarget:(id)target selector:(SEL)selector object:(id)argument</code>创建一个新的 NSThread 对象,并调用它的 start 方法。</li>
+<li>调用NSObject的<code>+performSelectorInBackground:withObject:</code>方法生成子线程。</li>
+<li>创建一个NSThread子类，然后调用子类实例的start方法。</li>
 </ol>
 
 </div>
