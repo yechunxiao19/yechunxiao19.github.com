@@ -9,7 +9,7 @@
 	
 	<meta name="description" content="ios的多线程管理有3种方式 NSThread &amp; Run Loop
 NSOperation
-GCD Run Loop 首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候， 它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出， &hellip;">
+GCD Run Loop 首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候，它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出， &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -102,7 +102,7 @@ GCD Run Loop 首先我们说一下线程的起用和退出的问题，当我们�
 
 <h4>Run Loop</h4>
 
-<p>首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候， 它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出，这个线程就结束了。注意，这里是它一旦发现自己没活可干，就会马上消失，片刻都不会停留。</p>
+<p>首先我们说一下线程的起用和退出的问题，当我们自己创建一个线程并分配给它活干的时候，它会立刻开始给我们干活，一旦活干完了，它又没有马上找到新活，那么就会立刻退出，这个线程就结束了。注意，这里是它一旦发现自己没活可干，就会马上消失，片刻都不会停留。</p>
 
 <p>这样我们就遇到一个问题，如果我们打算让这个线程做一个延时的任务，或者想让它接受其它的回调命令，或者等待一个点击等非即时性命令，而这个线程是不知道等的，因为它一发现自己没活干，就消失了。这显然不是我们希望的。可能有人会问，主线程不会这样啊，原因就是我们要讨论的主题，主线程默认开启了RunLoop，而我们创建的线程默认是没有开启的。</p>
 
@@ -118,15 +118,115 @@ GCD Run Loop 首先我们说一下线程的起用和退出的问题，当我们�
 
 <p>NSThread 比其他两种方式轻量级，但需要自己管理线程的生命周期，线程同步。线程同步对数据的加锁也会有一定的系统开销。</p>
 
-<p>使用 NSThread 来创建线程有多个方法:</p>
+<p>使用NSThread来创建线程有多个方法:</p>
 
 <ol>
-<li>使用<code>+ (void)detachNewThreadSelector:(SEL)aSelector toTarget:(id)aTarget withObject:(id)anArgument</code>类方法来生成一个新的线程。</li>
-<li>使用<code>- (id)initWithTarget:(id)target selector:(SEL)selector object:(id)argument</code>创建一个新的 NSThread 对象,并调用它的 start 方法。</li>
+<li>使用 <code>+ (void)detachNewThreadSelector:(SEL)aSelector toTarget:(id)aTarget withObject:(id)anArgument</code> 类方法来生成一个新的线程。</li>
+<li>使用 <code>- (id)initWithTarget:(id)target selector:(SEL)selector object:(id)argument</code> 创建一个新的 NSThread 对象,并调用它的 start 方法。</li>
 <li>调用NSObject的<code>+performSelectorInBackground:withObject:</code>方法生成子线程。</li>
 <li>创建一个NSThread子类，然后调用子类实例的start方法。</li>
 </ol>
 
+
+<p>编写你线程的主体入口点的额外步骤：</p>
+
+<ol>
+<li>在<a href="http://yechunxiao19.github.io/blog/2014/02/04/arc/">ARC</a>这篇文章里面提到了，有3种情况应该自己创建autorelease池，其中一种情况就是创建了子线程。</li>
+<li>子线程应该自行管理好抛出异常，如果不在子线程内部设置异常处理函数，会导致程序直接Crash。</li>
+<li>如果子线程不止一次操作，需要循环处理的话，设置一个Run Loop。</li>
+</ol>
+
+
+<p>每个线程都维护了一个键-值的字典，它可以在线程里面的任何地方被访问。你可以使用该字典来保存一些信息,这些信息在整个线程的执行过程中都保持不变。你使用NSThread的<code>threadDictionary</code>方法来检索一个NSMutableDictionary对象，你可以在它里面添加任何线程需要的键。</p>
+
+<p>你创建的任何线程默认的优先级是和你本身线程相同。你可以使用NSThread的 <code>setThreadPriority:</code>类方法来设置当前运行线程的优先级。</p>
+
+<p>退出一个线程推荐的方法是让它从主题入口点正常退出。对于直接杀死线程，这是完全不鼓励的，这样无法保证线程当前使用资源被清理干净了。如果需要在操作中间中断一个线程，建议使用Run Loop的输入源来接收取消消息。</p>
+
+<h4>NSOperation</h4>
+
+<p>NSOperation本身是抽象基类，我们必须实现子类。Foundation framework提供NSInvocationOperation和NSBlockOperation两个具体子类，你可以直接使用。</p>
+
+<p>所有 operation objects 都支持以下关键特性:</p>
+
+<ol>
+<li>支持建立基于图的operation objects依赖。可以阻止某个operation 运行,直到它依赖的所有 operation 都已经完成。</li>
+<li>支持可选的 completion block,在 operation 的主任务完成后调用。</li>
+<li>支持应用使用 KVO 通知来监控 operation 的执行状态。</li>
+<li>支持 operation 优先级,从而影响相对的执行顺序。</li>
+<li>支持取消,允许你中止正在执行的任务。</li>
+</ol>
+
+
+<p>创建一个 NSInvocationOperation 对象并发执行</p>
+
+<pre><code>@implementation MyCustomClass
+
+- (NSOperation*)taskWithData:(id)data {
+    NSInvocationOperation* theOp = [[NSInvocationOperation alloc]initWithTarget:self selector:@selector(myTaskMethod:) object:data];
+    return theOp;
+}
+
+// This is the method that does the actual work of the task.
+- (void)myTaskMethod:(id)data {
+    // Perform the task.
+}
+@end
+</code></pre>
+
+<p>创建一个NSBlockOperation 对象</p>
+
+<pre><code>NSBlockOperation* theOp = [NSBlockOperation blockOperationWithBlock: ^{
+    NSLog(@"Beginning operation.\n");
+    // Do some work.
+}];
+</code></pre>
+
+<p>使用<code>addExecutionBlock:</code>可以添加更多block到这个block operation对象。如果需要顺序地执行 block，你必须直接提交到所需的dispatch queue。</p>
+
+<p>自定义operation需要实现的方法：</p>
+
+<ol>
+<li>自定义<code>initialization</code>方法:初始化，将operation对象设置为已知状态(必须实现)</li>
+<li>自定义<code>main</code>方法:执行你的任务（必须实现）</li>
+<li><code>main</code>方法中需要调用的其它自定义方法</li>
+<li><code>Accessor</code>方法:设置和访问operation对象的数据</li>
+<li><code>NSCoding</code>协议的方法:允许operation对象archive和unarchive</li>
+</ol>
+
+
+<p>operation响应取消，调用<code>isCancelled:</code>方法，如果返回YES(表示已取消),则立即退出执行。以下地方可能需要调用 isCancelled:</p>
+
+<ul>
+<li>在执行任何实际的工作之前</li>
+<li>在循环的每次迭代过程中,如果每个迭代相对较长可能需要调用多次</li>
+<li>代码中相对比较容易中止操作的任何地方</li>
+</ul>
+
+
+<p>Operation对象默认按同步方式执行，也就是在调用<code>start</code>方法的那个线程中直接执行。但是如果你希望异步执行操作，你就必须定义operation对象为并发操作来实现。</p>
+
+<ul>
+<li><code>start</code> （必须）所有并发操作都必须覆盖这个方法，以自定义的实现替换默认行为。手动执行一个操作时，你会调用<code>start</code>方法。因此你对这个方法的实现是操作的起点，设置一个线程或其它执行环境，来执行你的任务。你的实现在任何时候都绝对不能调用<code>super</code>。</li>
+<li><code>main</code> （可选）这个方法通常用来实现operation对象相关联的任务。尽管你可以在<code>start</code>方法中执行任务，使用<code>main</code>来实现任务可以让你的代码更加清晰地分离设置和任务代码。</li>
+<li><code>isExecuting</code> <code>isFinished</code> （必须）并发操作负责设置自己的执行环境，并向外部 client 报告执行环境的状态。因此并发操作必须维护某些状态信息，以知道是否正在执行任务，是否已经完成任务。使用这两个方法报告自己的状态。这两个方法的实现必须能够在其它多个线程中同时调用。另外这些方法报告的状态变化时，还需要为相应的key path产生适当的KVO通知。</li>
+<li><code>isConcurrent</code> （必须）标识一个操作是否并发 operation，覆盖这个方法并返回 YES。</li>
+</ul>
+
+
+<p>使用 NSOperation 的<code>addDependency:</code>方法在两个operation对象之间建立依赖关系。表示当前operation 对象将依赖于参数指定的目标 operation 对象。如果你自定义了 operation 对象的行为，就必须在自定义代码中生成适当的 KVO 通知，以确保依赖能够正确地执行。</p>
+
+<p>operation 可以在主任务完成之后执行一个 <code>completion block</code>。你可以使用这个 <code>completion block</code> 来执行任何不属于主任务的工作。</p>
+
+<p>执行Operations有2种方法：</p>
+
+<ol>
+<li>执行 Operations 最简单的方法是添加到 operation queue</li>
+<li>手动执行 Operation，要求 Operation 已经准备好，<code>isReady</code>返回 YES，此时你才能调用<code>start</code>方法来执行</li>
+</ol>
+
+
+<h4>GCD</h4>
 
 		
 		
