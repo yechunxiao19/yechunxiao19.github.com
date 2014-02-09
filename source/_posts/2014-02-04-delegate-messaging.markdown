@@ -24,3 +24,4 @@ categories: ios
 * 内存不足情况下，以及用户自行关闭应用的情况下，不会执行`applicationWillTerminate:`，所以必须要在`applicationWillResignActive`事件里保存数据。
 * `becomeActive`和`resignActive`配对操作进行UI数据等的恢复。
 * `enterBackground`和`enterForeground`配对操作进行用户数据等的恢复。
+* 在以前，当app被按home键退出后，app仅有最多5秒钟的时候做一些保存或清理资源的工作。但是应用可以调用UIApplication的`beginBackgroundTaskWithExpirationHandler`方法，让app最多有10分钟的时间在后台长久运行。这个时间可以用来做清理本地缓存，发送统计数据等工作。
